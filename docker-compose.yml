@@ -1,0 +1,14 @@
+version: "3.8"
+services:
+  llm-gateway:
+    build: .
+    ports:
+      - "4000:4000"
+    environment:
+      - MASTER_KEY=${MASTER_KEY}
+      - GEMINI_API_KEYS=${GEMINI_API_KEYS}
+      - MISTRAL_API_KEY=${MISTRAL_API_KEY}
+      - RATE_LIMIT_PER_MINUTE=${RATE_LIMIT_PER_MINUTE:-60}
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
