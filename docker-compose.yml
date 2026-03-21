@@ -2,8 +2,6 @@ version: "3.8"
 services:
   llm-gateway:
     build: .
-    ports:
-      - "4000:4000"
     environment:
       - MASTER_KEY=${MASTER_KEY}
       - GEMINI_API_KEYS=${GEMINI_API_KEYS}
