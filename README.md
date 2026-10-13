@@ -70,6 +70,27 @@ Réponse :
 }
 ```
 
+Champs optionnels :
+
+- `references` : images étiquetées envoyées avant l'image analysée, pour comparer (ex. photo de référence de chaque élément d'une checklist). Chaque `label` précède son image dans la requête Gemini.
+- `thinking_budget` : budget de réflexion Gemini (`0` = désactivée, moins cher pour une classification simple). Absent = défaut du modèle.
+
+```json
+{
+  "image": "<base64>", "mime_type": "image/jpeg",
+  "prompt": "Quel élément montre cette photo ?",
+  "references": [{"label": "Élément 1 · Salle de bain", "image": "<base64>", "mime_type": "image/jpeg"}],
+  "thinking_budget": 0
+}
+```
+
+## Tests
+
+```bash
+pip install -r requirements-dev.txt
+pytest
+```
+
 ## Features
 
 - Round-robin multi-clés Gemini

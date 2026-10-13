@@ -13,17 +13,31 @@ router = APIRouter()
 gemini = GeminiProvider()
 
 
+class Reference(BaseModel):
+    label: str
+    image: str  # base64 encoded
+    mime_type: str = "image/jpeg"
+
+
 class OcrRequest(BaseModel):
     image: str  # base64 encoded
     mime_type: str = "image/png"
     prompt: str = "Extract all text from this image."
+    references: list[Reference] = []
+    thinking_budget: int | None = None
 
 
 @router.post("/v1/ocr")
 async def ocr(body: OcrRequest, request: Request):
     start = time.time()
 
-    result = await gemini.ocr(body.image, body.mime_type, body.prompt)
+    result = await gemini.ocr(
+        body.image,
+        body.mime_type,
+        body.prompt,
+        references=[reference.model_dump() for reference in body.references],
+        thinking_budget=body.thinking_budget,
+    )
 
     elapsed_ms = int((time.time() - start) * 1000)
 

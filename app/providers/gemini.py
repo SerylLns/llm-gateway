@@ -52,20 +52,28 @@ class GeminiProvider(BaseProvider):
             "tokens_out": usage.get("candidatesTokenCount", 0),
         }
 
-    async def ocr(self, image_base64: str, mime_type: str = "image/png", prompt: str = "Extract all text from this image.") -> dict:
-        contents = [
-            {
-                "role": "user",
-                "parts": [
-                    {"inline_data": {"mime_type": mime_type, "data": image_base64}},
-                    {"text": prompt},
-                ],
-            }
-        ]
+    async def ocr(
+        self,
+        image_base64: str,
+        mime_type: str = "image/png",
+        prompt: str = "Extract all text from this image.",
+        references: list[dict] = (),
+        thinking_budget: int | None = None,
+    ) -> dict:
+        parts = []
+        for reference in references:
+            parts.append({"text": reference["label"]})
+            parts.append({"inline_data": {"mime_type": reference["mime_type"], "data": reference["image"]}})
+        parts.append({"inline_data": {"mime_type": mime_type, "data": image_base64}})
+        parts.append({"text": prompt})
+
+        generation_config = {"temperature": 0.1}
+        if thinking_budget is not None:
+            generation_config["thinkingConfig"] = {"thinkingBudget": thinking_budget}
 
         payload = {
-            "contents": contents,
-            "generationConfig": {"temperature": 0.1},
+            "contents": [{"role": "user", "parts": parts}],
+            "generationConfig": generation_config,
         }
 
         key = self._next_key()
