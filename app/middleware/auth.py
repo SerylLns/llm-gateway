@@ -1,10 +1,12 @@
+import hmac
+
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from app.config import settings
 
-OPEN_PATHS = {"/health", "/docs", "/openapi.json", "/redoc"}
+OPEN_PATHS = {"/health"}
 
 
 class AuthMiddleware(BaseHTTPMiddleware):
@@ -15,7 +17,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
         auth = request.headers.get("authorization", "")
         token = auth.replace("Bearer ", "") if auth.startswith("Bearer ") else ""
 
-        if token != settings.master_key:
+        if not hmac.compare_digest(token.encode(), settings.master_key.encode()):
             return JSONResponse({"error": "unauthorized"}, status_code=401)
 
         return await call_next(request)

@@ -6,7 +6,7 @@ from app.middleware.rate_limit import RateLimitMiddleware
 from app.middleware.logger import LoggerMiddleware
 from app.routes import health, chat, ocr
 
-app = FastAPI(title="LLM Gateway", version="1.0.0")
+app = FastAPI(title="LLM Gateway", version="1.0.0", docs_url=None, redoc_url=None, openapi_url=None)
 
 # Middleware (order matters: first added = outermost)
 app.add_middleware(LoggerMiddleware)
